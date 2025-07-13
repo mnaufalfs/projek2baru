@@ -1,0 +1,38 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    # Placeholder ini akan diganti oleh GitHub Actions
+    image: DOCKER_IMAGE_NAME_PLACEHOLDER
+    container_name: rental_kendaraan_app
+    restart: always
+    ports:
+      # Mapping port host:container. Host port 80 ke container port 80
+      - "80:80"
+    environment:
+      DB_HOST: db                    # 'db' adalah nama service database di Docker Compose
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db # Pastikan service 'db' dimulai sebelum 'app'
+
+  db:
+    image: mysql:8.0 # Anda bisa menggunakan mariadb:latest atau versi MySQL lain
+    container_name: rental_kendaraan_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} # Password untuk user 'root' MySQL
+      MYSQL_DATABASE: ${DB_NAME}                 # Nama database yang akan dibuat
+      MYSQL_USER: ${DB_USER}                     # User untuk koneksi aplikasi
+      MYSQL_PASSWORD: ${DB_PASSWORD}             # Password untuk user aplikasi
+      # MYSQL_ALLOW_EMPTY_PASSWORD: "yes"          # Uncomment ini jika Anda ingin password kosong (TIDAK DIREKOMENDASIKAN)
+    volumes:
+      # Data database akan disimpan di volume bernama 'db_data' untuk persistensi
+      - db_data:/var/lib/mysql
+      # Jika Anda memiliki dump SQL awal, akan dieksekusi saat pertama kali kontainer dibuat
+      - ./rental_kendaraan.sql:/docker-entrypoint-initdb.d/rental_kendaraan.sql
+
+volumes:
+  db_data: # Definisi volume untuk data database
