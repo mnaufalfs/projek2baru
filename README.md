@@ -1,7 +1,7 @@
 # Vehicle Rental System
 
 A web-based vehicle rental system built with PHP and MySQL.
-
+ 
 ## Features
 
 ### User Features
